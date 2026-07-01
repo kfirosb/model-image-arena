@@ -2,10 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Image Model Comparison</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Image Model Comparison</h1>
-    <p>Coming soon.</p>
+    <header>
+      <h1>Image Model Comparison</h1>
+      <form id="prompt-form">
+        <input id="prompt" type="text" placeholder="a frog" autocomplete="off" />
+        <button id="go" type="submit">Generate</button>
+      </form>
+      <p id="status" class="status"></p>
+    </header>
+    <main>
+      <div id="grid" class="grid"></div>
+    </main>
+    <script src="app.js" type="module"></script>
   </body>
 </html>

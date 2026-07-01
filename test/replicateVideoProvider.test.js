@@ -44,6 +44,15 @@ test('throws when the prediction fails', async () => {
   await assert.rejects(() => provider.generate('a frog'), /failed|nsfw/);
 });
 
+test('throws when the create response has no prediction URL', async () => {
+  process.env.REPLICATE_API_TOKEN = 'r8_test';
+  __setFetch(async (url, opts) => {
+    if (opts && opts.method === 'POST') return { ok: true, json: async () => ({ id: 'p', status: 'starting' }) };
+    throw new Error('should not poll without a prediction URL');
+  });
+  await assert.rejects(() => provider.generate('a frog'), /prediction URL/i);
+});
+
 test('throws timed out when polling never completes before the deadline', async () => {
   process.env.REPLICATE_API_TOKEN = 'r8_test';
   const p = makeReplicateVideoProvider({ id: 'v2', label: 'V2', model: 'o/m', cost: 0.1, timeoutMs: 5, pollMs: 0 });

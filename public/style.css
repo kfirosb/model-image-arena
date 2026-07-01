@@ -23,4 +23,3 @@ h1 { margin: 0 0 12px; font-size: 20px; }
 .pick { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .pick input { cursor: pointer; }
 #estimate { color: #8fd6a0; font-weight: 600; }
-.tile.loading .imgwrap::after { content: "generating…"; color: #9aa0aa; }

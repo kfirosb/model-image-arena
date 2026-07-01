@@ -40,9 +40,10 @@ function selectedIds() {
 }
 
 function updateEstimate() {
+  const ids = selectedIds();
   let total = 0;
-  for (const id of selectedIds()) total += (meta.get(id)?.cost || 0);
-  const n = selectedIds().length;
+  for (const id of ids) total += (meta.get(id)?.cost || 0);
+  const n = ids.length;
   estimateEl.textContent = `Estimated: $${total.toFixed(3)} for ${n} selected model${n === 1 ? '' : 's'}`;
 }
 
@@ -64,7 +65,7 @@ function render(id, label, state) {
       img.src = state.image; img.alt = label;
       wrap.appendChild(img);
     }
-    const cost = state.cost ? `$${state.cost.toFixed(3)}` : '—';
+    const cost = state.cost != null ? `$${state.cost.toFixed(3)}` : '—';
     sub.textContent = `${state.ms ?? '?'} ms · ${cost}`;
   } else if (state.status === 'error') {
     el.setAttribute('data-error', state.error || 'error');

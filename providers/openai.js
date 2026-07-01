@@ -28,7 +28,8 @@ export default {
       throw new Error(`OpenAI ${res.status}: ${detail.slice(0, 300)}`);
     }
     const data = await res.json();
-    const b64 = data.data[0].b64_json;
+    const b64 = data?.data?.[0]?.b64_json;
+    if (!b64) throw new Error('OpenAI returned no image data');
     return {
       image: `data:image/png;base64,${b64}`,
       ms: Date.now() - started,

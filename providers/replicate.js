@@ -29,9 +29,11 @@ export default {
     }
     const data = await res.json();
     if (data.status !== 'succeeded') {
-      throw new Error(`Replicate prediction ${data.status}: ${data.error || ''}`);
+      const detail = typeof data.error === 'string' ? data.error : JSON.stringify(data.error || '');
+      throw new Error(`Replicate prediction ${data.status}: ${detail}`);
     }
     const image = Array.isArray(data.output) ? data.output[0] : data.output;
+    if (!image) throw new Error('Replicate returned no image');
     return { image, ms: Date.now() - started, cost: COST_PER_IMAGE };
   },
 };

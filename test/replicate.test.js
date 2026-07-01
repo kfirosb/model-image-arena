@@ -39,3 +39,28 @@ test('generate throws when prediction fails', async () => {
   }));
   await assert.rejects(() => replicate.generate('a frog'), /failed|nsfw/);
 });
+
+test('generate throws with structured error stringified (not [object Object])', async () => {
+  process.env.REPLICATE_API_TOKEN = 'r8_test';
+  __setFetch(async () => ({
+    ok: true,
+    json: async () => ({ status: 'failed', error: { code: 'nsfw', detail: 'blocked' } }),
+  }));
+  await assert.rejects(
+    () => replicate.generate('a frog'),
+    (err) => {
+      assert.match(err.message, /nsfw/);
+      assert.doesNotMatch(err.message, /\[object Object\]/);
+      return true;
+    },
+  );
+});
+
+test('generate throws when output is empty', async () => {
+  process.env.REPLICATE_API_TOKEN = 'r8_test';
+  __setFetch(async () => ({
+    ok: true,
+    json: async () => ({ status: 'succeeded', output: [] }),
+  }));
+  await assert.rejects(() => replicate.generate('a frog'), /no image/i);
+});

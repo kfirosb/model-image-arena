@@ -16,16 +16,26 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.get('/api/providers', async (_req, res) => {
-  const providers = await loadProviders(providersDir);
-  res.json({ providers: listProviders(providers) });
+  try {
+    const providers = await loadProviders(providersDir);
+    res.json({ providers: listProviders(providers) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: String(err.message || err) });
+  }
 });
 
 app.post('/api/generate', async (req, res) => {
-  const prompt = (req.body?.prompt || '').trim();
-  if (!prompt) return res.status(400).json({ error: 'prompt is required' });
-  const providers = await loadProviders(providersDir);
-  const results = await generateAll(providers, prompt);
-  res.json({ prompt, results });
+  try {
+    const prompt = (req.body?.prompt || '').trim();
+    if (!prompt) return res.status(400).json({ error: 'prompt is required' });
+    const providers = await loadProviders(providersDir);
+    const results = await generateAll(providers, prompt);
+    res.json({ prompt, results });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: String(err.message || err) });
+  }
 });
 
 export function start(port = process.env.PORT || 3000) {

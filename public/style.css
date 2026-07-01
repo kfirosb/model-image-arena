@@ -23,3 +23,9 @@ h1 { margin: 0 0 12px; font-size: 20px; }
 .pick { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .pick input { cursor: pointer; }
 #estimate { color: #8fd6a0; font-weight: 600; }
+.tabs { display: flex; gap: 8px; margin: 12px 0 4px; }
+.tab { padding: 8px 16px; font-size: 15px; border: 1px solid #23262d; background: #171a21; color: #9aa0aa; border-radius: 8px; cursor: pointer; }
+.tab.active { background: #4f7cff; color: #fff; border-color: #4f7cff; }
+/* Tab filtering: show only the active kind's tiles */
+.grid[data-kind="image"] .tile[data-kind="video"] { display: none; }
+.grid[data-kind="video"] .tile[data-kind="image"] { display: none; }

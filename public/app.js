@@ -4,9 +4,11 @@ const goBtn = document.getElementById('go');
 const statusEl = document.getElementById('status');
 const estimateEl = document.getElementById('estimate');
 const grid = document.getElementById('grid');
+const tabsEl = document.getElementById('tabs');
 
 const tiles = new Map();     // id -> tile element
 const meta = new Map();      // id -> { kind, cost, status }
+let activeKind = 'image';    // 'image' | 'video' — which tab is showing
 
 function tile(id, label) {
   let el = tiles.get(id);
@@ -31,10 +33,11 @@ function tile(id, label) {
   return el;
 }
 
+// Only the checked tiles belonging to the active tab count.
 function selectedIds() {
   const ids = [];
   for (const [id, el] of tiles) {
-    if (el.querySelector('.run').checked) ids.push(id);
+    if (el.querySelector('.run').checked && meta.get(id)?.kind === activeKind) ids.push(id);
   }
   return ids;
 }
@@ -44,14 +47,25 @@ function updateEstimate() {
   let total = 0;
   for (const id of ids) total += (meta.get(id)?.cost || 0);
   const n = ids.length;
-  estimateEl.textContent = `Estimated: $${total.toFixed(3)} for ${n} selected model${n === 1 ? '' : 's'}`;
+  const noun = activeKind === 'video' ? 'video' : 'image';
+  estimateEl.textContent = `Estimated: $${total.toFixed(3)} for ${n} ${noun} model${n === 1 ? '' : 's'}`;
+}
+
+function setTab(kind) {
+  activeKind = kind;
+  grid.dataset.kind = kind;               // CSS hides the other kind's tiles
+  for (const btn of tabsEl.querySelectorAll('.tab')) {
+    btn.classList.toggle('active', btn.dataset.kind === kind);
+  }
+  statusEl.textContent = '';
+  updateEstimate();
 }
 
 function render(id, label, state) {
   const el = tile(id, label);
   const wrap = el.querySelector('.imgwrap');
   const sub = el.querySelector('.sub');
-  // keep the checkbox state class separate from the status class
+  // status drives the tile class; visibility is handled by grid[data-kind] CSS
   el.className = `tile ${state.status}`;
   wrap.querySelectorAll('img,video').forEach((n) => n.remove());
   el.removeAttribute('data-error');
@@ -87,6 +101,7 @@ async function loadProviders() {
     meta.set(p.id, { kind: p.kind, cost: p.cost, status: p.status });
     render(p.id, p.label, { status: p.status });
     const el = tiles.get(p.id);
+    el.dataset.kind = p.kind;             // used by the tab-filtering CSS
     const box = el.querySelector('.run');
     box.disabled = p.status !== 'ready';
     // default: image models checked, video models unchecked
@@ -95,15 +110,20 @@ async function loadProviders() {
     el.querySelector('.sub').textContent =
       (p.status === 'no_key' ? 'add key in .env to enable' : (p.kind === 'video' ? 'video' : 'image')) + costLabel;
   }
-  updateEstimate();
+  setTab(activeKind);
 }
+
+tabsEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('.tab');
+  if (btn) setTab(btn.dataset.kind);
+});
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const prompt = promptEl.value.trim();
   if (!prompt) return;
   const ids = selectedIds();
-  if (!ids.length) { statusEl.textContent = 'Select at least one model.'; return; }
+  if (!ids.length) { statusEl.textContent = `Select at least one ${activeKind} model.`; return; }
   goBtn.disabled = true;
   statusEl.textContent = 'Generating…';
   for (const id of ids) {

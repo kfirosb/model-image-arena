@@ -11,8 +11,8 @@ model is best for your project.
 ![Node](https://img.shields.io/badge/node-%3E%3D20.6-brightgreen)
 ![Tests](https://img.shields.io/badge/tests-35%20passing-brightgreen)
 
-<!-- Add a screenshot: save one of your runs as docs/screenshot.png and it shows here -->
-![Screenshot](docs/screenshot.png)
+<!-- Tip: add a screenshot of a run by saving a PNG to docs/screenshot.png and
+     adding:  ![Screenshot](docs/screenshot.png)  right here. -->
 
 ---
 

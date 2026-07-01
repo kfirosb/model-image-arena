@@ -9,7 +9,7 @@ model is best for your project.
 
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D20.6-brightgreen)
-![Tests](https://img.shields.io/badge/tests-60%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-61%20passing-brightgreen)
 
 <!-- Tip: add a screenshot of a run by saving a PNG to docs/screenshot.png and
      adding:  ![Screenshot](docs/screenshot.png)  right here. -->
@@ -176,7 +176,7 @@ export default makeReplicateProvider({
 npm test
 ```
 
-All 60 tests use Node's built-in test runner and **mock every HTTP call**, so
+All 61 tests use Node's built-in test runner and **mock every HTTP call**, so
 they never spend real API credits.
 
 ## 🤝 Contributing

@@ -37,3 +37,10 @@ test('timeout -> error status', async () => {
   assert.equal(r.status, 'error');
   assert.match(r.error, /timed out/i);
 });
+
+test('hasKey throws -> resolves with error status, never rejects', async () => {
+  const p = make({ hasKey: () => { throw new Error('key check failed'); } });
+  const r = await runOne(p, 'frog');
+  assert.equal(r.status, 'error');
+  assert.match(r.error, /key check failed/);
+});

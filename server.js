@@ -29,8 +29,9 @@ app.post('/api/generate', async (req, res) => {
   try {
     const prompt = (req.body?.prompt || '').trim();
     if (!prompt) return res.status(400).json({ error: 'prompt is required' });
+    const ids = Array.isArray(req.body?.ids) ? req.body.ids : undefined;
     const providers = await loadProviders(providersDir);
-    const results = await generateAll(providers, prompt);
+    const results = await generateAll(providers, prompt, ids);
     res.json({ prompt, results });
   } catch (err) {
     console.error(err);

@@ -96,6 +96,7 @@ export function makeReplicateProvider({ id, label, model, cost = 0, input = {} }
   return {
     id,
     label,
+    cost,
     hasKey() { return !!process.env.REPLICATE_API_TOKEN; },
     async generate(prompt) {
       return withSlot(async () => {

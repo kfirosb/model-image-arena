@@ -13,6 +13,7 @@ export function makeOpenAIProvider({ id, label, model, cost = 0, size = '1024x10
   return {
     id,
     label,
+    cost,
     hasKey() { return !!process.env.OPENAI_API_KEY; },
     async generate(prompt) {
       const started = Date.now();

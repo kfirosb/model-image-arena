@@ -1,6 +1,6 @@
 # 🏟️ Model Image Arena
 
-**Type one prompt, watch 5 AI image models generate it side by side.**
+**Type one prompt, watch 6 AI image models generate it side by side.**
 
 Model Image Arena is a tiny local web app that sends the same prompt to several
 text-to-image models **in parallel** and shows every result in one grid — with
@@ -9,7 +9,7 @@ model is best for your project.
 
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D20.6-brightgreen)
-![Tests](https://img.shields.io/badge/tests-35%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-37%20passing-brightgreen)
 
 <!-- Tip: add a screenshot of a run by saving a PNG to docs/screenshot.png and
      adding:  ![Screenshot](docs/screenshot.png)  right here. -->
@@ -31,6 +31,7 @@ model is best for your project.
 | Model | Provider | Key needed |
 |---|---|---|
 | OpenAI gpt-image-1 | OpenAI | `OPENAI_API_KEY` |
+| OpenAI gpt-image-2 | OpenAI | `OPENAI_API_KEY` |
 | FLUX schnell | Replicate | `REPLICATE_API_TOKEN` |
 | FLUX 1.1 pro | Replicate | `REPLICATE_API_TOKEN` |
 | Google Imagen 4 (fast) | Replicate | `REPLICATE_API_TOKEN` |
@@ -92,7 +93,8 @@ Browser (index.html + app.js)
       ▼
 Express server (server.js)
       │  run every keyed provider in parallel (Promise.all)
-      ├─ providers/openai.js
+      ├─ providers/openai.js               (gpt-image-1)
+      ├─ providers/openai-gpt-image-2.js   (gpt-image-2)
       ├─ providers/replicate.js          (FLUX schnell)
       ├─ providers/replicate-flux-pro.js
       ├─ providers/replicate-imagen.js
@@ -149,7 +151,7 @@ export default makeReplicateProvider({
 npm test
 ```
 
-All 35 tests use Node's built-in test runner and **mock every HTTP call**, so
+All 37 tests use Node's built-in test runner and **mock every HTTP call**, so
 they never spend real API credits.
 
 ## 🤝 Contributing

@@ -1,39 +1,11 @@
-// Allow tests to inject a fake fetch; default to global fetch.
-let _fetch = globalThis.fetch;
-export function __setFetch(fn) { _fetch = fn; }
+import { makeOpenAIProvider } from '../src/openaiProvider.js';
 
-const COST_PER_IMAGE = 0.04; // rough estimate for gpt-image-1 1024x1024
+// Re-export the test seam so existing tests can inject a fake fetch.
+export { __setFetch } from '../src/openaiProvider.js';
 
-export default {
+export default makeOpenAIProvider({
   id: 'openai',
   label: 'OpenAI gpt-image-1',
-  hasKey() { return !!process.env.OPENAI_API_KEY; },
-  async generate(prompt) {
-    const started = Date.now();
-    const res = await _fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-image-1',
-        prompt,
-        n: 1,
-        size: '1024x1024',
-      }),
-    });
-    if (!res.ok) {
-      const detail = await res.text();
-      throw new Error(`OpenAI ${res.status}: ${detail.slice(0, 300)}`);
-    }
-    const data = await res.json();
-    const b64 = data?.data?.[0]?.b64_json;
-    if (!b64) throw new Error('OpenAI returned no image data');
-    return {
-      image: `data:image/png;base64,${b64}`,
-      ms: Date.now() - started,
-      cost: COST_PER_IMAGE,
-    };
-  },
-};
+  model: 'gpt-image-1',
+  cost: 0.04, // rough estimate for 1024x1024
+});

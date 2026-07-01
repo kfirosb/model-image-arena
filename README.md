@@ -1,6 +1,6 @@
 # 🏟️ Model Image Arena
 
-**Type one prompt, watch 6 AI image models generate it side by side.**
+**Type one prompt, watch AI image _and video_ models generate it side by side.**
 
 Model Image Arena is a tiny local web app that sends the same prompt to several
 text-to-image models **in parallel** and shows every result in one grid — with
@@ -40,6 +40,29 @@ model is best for your project.
 > One Replicate token unlocks all four Replicate-hosted models. Add more models
 > (Stable Diffusion, Recraft, Seedream, …) with a few lines — see
 > [Adding a model](#-adding-a-model).
+
+## 🎬 Video models (opt-in)
+
+The arena also compares **text-to-video** models. Because video is slow (minutes)
+and expensive (dollars per clip), every video model is **opt-in**:
+
+- Each model tile has a checkbox. **Video models are unchecked by default**; only
+  checked models run.
+- A live **estimated-cost** line shows the total for your current selection before
+  you hit Generate.
+
+| Model | Provider | Key |
+|---|---|---|
+| OpenAI Sora-2 / Sora-2 pro | OpenAI | `OPENAI_API_KEY` |
+| Google Veo-3 fast | Replicate | `REPLICATE_API_TOKEN` |
+| Kling v2.1 | Replicate | `REPLICATE_API_TOKEN` |
+| Wan 2.5 t2v fast | Replicate | `REPLICATE_API_TOKEN` |
+| Minimax Hailuo-02 | Replicate | `REPLICATE_API_TOKEN` |
+| LTX-video | Replicate | `REPLICATE_API_TOKEN` |
+| Hunyuan-video | Replicate | `REPLICATE_API_TOKEN` |
+
+> Costs shown in the UI are rough estimates for budgeting — a single Sora or Veo
+> clip can cost a few dollars. Verify against current provider pricing.
 
 ## 🚀 Quick start
 

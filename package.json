@@ -1,0 +1,31 @@
+{
+  "name": "model-image-arena",
+  "version": "1.0.0",
+  "description": "Send one prompt to multiple AI image models in parallel and compare the results side by side in a local web UI.",
+  "type": "module",
+  "license": "MIT",
+  "author": "kfir bekhavod",
+  "keywords": [
+    "ai",
+    "image-generation",
+    "text-to-image",
+    "openai",
+    "replicate",
+    "flux",
+    "imagen",
+    "ideogram",
+    "model-comparison",
+    "benchmark"
+  ],
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "dev": "node --env-file=.env --watch server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

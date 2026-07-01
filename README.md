@@ -1,6 +1,6 @@
 # 🏟️ Model Image Arena
 
-**Type one prompt, watch 6 AI image models generate it side by side.**
+**Type one prompt, watch AI image _and video_ models generate it side by side.**
 
 Model Image Arena is a tiny local web app that sends the same prompt to several
 text-to-image models **in parallel** and shows every result in one grid — with
@@ -9,7 +9,7 @@ model is best for your project.
 
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D20.6-brightgreen)
-![Tests](https://img.shields.io/badge/tests-37%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-61%20passing-brightgreen)
 
 <!-- Tip: add a screenshot of a run by saving a PNG to docs/screenshot.png and
      adding:  ![Screenshot](docs/screenshot.png)  right here. -->
@@ -41,6 +41,29 @@ model is best for your project.
 > (Stable Diffusion, Recraft, Seedream, …) with a few lines — see
 > [Adding a model](#-adding-a-model).
 
+## 🎬 Video models (opt-in)
+
+The arena also compares **text-to-video** models. Because video is slow (minutes)
+and expensive (dollars per clip), every video model is **opt-in**:
+
+- Each model tile has a checkbox. **Video models are unchecked by default**; only
+  checked models run.
+- A live **estimated-cost** line shows the total for your current selection before
+  you hit Generate.
+
+| Model | Provider | Key |
+|---|---|---|
+| OpenAI Sora-2 / Sora-2 pro | OpenAI | `OPENAI_API_KEY` |
+| Google Veo-3 fast | Replicate | `REPLICATE_API_TOKEN` |
+| Kling v2.1 | Replicate | `REPLICATE_API_TOKEN` |
+| Wan 2.5 t2v fast | Replicate | `REPLICATE_API_TOKEN` |
+| Minimax Hailuo-02 | Replicate | `REPLICATE_API_TOKEN` |
+| LTX-video | Replicate | `REPLICATE_API_TOKEN` |
+| Hunyuan-video | Replicate | `REPLICATE_API_TOKEN` |
+
+> Costs shown in the UI are rough estimates for budgeting — a single Sora or Veo
+> clip can cost a few dollars. Verify against current provider pricing.
+
 ## 🚀 Quick start
 
 Requires **Node.js 20.6+**.
@@ -71,12 +94,12 @@ All configuration lives in `.env` (copied from `.env.example`):
 | `PORT` | `3000` | Port the local web server listens on |
 | `OPENAI_API_KEY` | — | Enables the OpenAI model |
 | `REPLICATE_API_TOKEN` | — | Enables all four Replicate models |
-| `REPLICATE_CONCURRENCY` | `1` | How many Replicate requests run at once. Keep at `1` on low-credit accounts to avoid throttling; raise (e.g. `4`) once you have enough credit to run them in parallel |
+| `REPLICATE_CONCURRENCY` | `1` | How many Replicate requests run at once. Keep at `1` on low-credit accounts to avoid throttling; raise (e.g. `4`) once you have enough credit to run them in parallel. A running video prediction holds a slot for its full (minutes-long) duration, so if you select a video model, consider raising this. |
 
 ## 💸 A note on cost & rate limits
 
 This tool calls **paid** APIs — each generation costs real money (typically a
-few cents per image). Testing a prompt across all five models is roughly
+few cents per image). Testing a prompt across all six image models is roughly
 **$0.10–0.15** total.
 
 Replicate throttles accounts under a credit threshold to a "burst of 1"
@@ -98,7 +121,9 @@ Express server (server.js)
       ├─ providers/replicate.js          (FLUX schnell)
       ├─ providers/replicate-flux-pro.js
       ├─ providers/replicate-imagen.js
-      └─ providers/replicate-ideogram.js
+      ├─ providers/replicate-ideogram.js
+      ├─ providers/video-*.js              (Veo-3, Kling, Wan, Hailuo, LTX, Hunyuan — poll)
+      └─ providers/sora-2.js / sora-2-pro.js (OpenAI Sora — poll)
       ▼
 returns [{ id, label, status, image, ms, cost }]
 ```
@@ -151,7 +176,7 @@ export default makeReplicateProvider({
 npm test
 ```
 
-All 37 tests use Node's built-in test runner and **mock every HTTP call**, so
+All 61 tests use Node's built-in test runner and **mock every HTTP call**, so
 they never spend real API credits.
 
 ## 🤝 Contributing

@@ -19,3 +19,7 @@ h1 { margin: 0 0 12px; font-size: 20px; }
 .tile.loading .imgwrap::after { content: "generating…"; color: #9aa0aa; }
 .star { background: none; border: 0; cursor: pointer; font-size: 16px; color: #555; }
 .star.on { color: #ffd23f; }
+.tile video { width: 100%; height: 100%; object-fit: cover; }
+.pick { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.pick input { cursor: pointer; }
+#estimate { color: #8fd6a0; font-weight: 600; }

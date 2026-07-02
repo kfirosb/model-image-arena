@@ -41,6 +41,20 @@ test('rejects an invalid --size', async () => {
   assert.match(res.stderr, /invalid --size/);
 });
 
+test('rejects a 0x0 --size', async () => {
+  const res = await main(['a cat', '--size', '0x0', '--out', join(tmpdir(), 'x.png')], { providersDir: dir });
+  assert.equal(res.code, 1);
+  assert.match(res.stderr, /invalid --size/);
+});
+
+test('--list-models shows friendly aliases, not raw provider ids', async () => {
+  const res = await main(['--list-models']);
+  assert.equal(res.code, 0);
+  assert.match(res.stdout, /gpt-image-1/);
+  assert.match(res.stdout, /gpt-image-2/);
+  assert.doesNotMatch(res.stdout, /^openai$/m);
+});
+
 test('requires --out', async () => {
   const res = await main(['a cat', '--model', 'fake-image'], { providersDir: dir });
   assert.equal(res.code, 1);

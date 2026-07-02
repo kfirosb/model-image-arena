@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path';
 import { generateImage } from '../src/generateImage.js';
 import { resizeToExact } from '../src/resizeImage.js';
 import { loadProviders } from '../src/registry.js';
+import { resolveModel, displayModel } from '../src/modelAliases.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PROVIDERS_DIR = join(__dirname, '..', 'providers');
@@ -12,10 +13,9 @@ const DEFAULT_PROVIDERS_DIR = join(__dirname, '..', 'providers');
 const USAGE = `Usage: genimage "<prompt>" --out <path> [--model <id>] [--size <WxH>]
        genimage --list-models`;
 
-// Friendly aliases → real provider ids. The arena's OpenAI providers use ids
-// `openai` / `openai-gpt-image-2`, but agents naturally say gpt-image-1/2.
-const MODEL_ALIASES = { 'gpt-image-1': 'openai', 'gpt-image-2': 'openai-gpt-image-2' };
-export function resolveModel(name) { return MODEL_ALIASES[name] ?? name; }
+// Re-exported so existing callers/tests importing resolveModel from this
+// file keep working; the real definition lives in src/modelAliases.js.
+export { resolveModel } from '../src/modelAliases.js';
 
 // Returns { code, stdout, stderr } — no process.exit, so it's testable.
 export async function main(argv, { providersDir = DEFAULT_PROVIDERS_DIR } = {}) {
@@ -37,7 +37,7 @@ export async function main(argv, { providersDir = DEFAULT_PROVIDERS_DIR } = {}) 
 
   if (values['list-models']) {
     const providers = await loadProviders(providersDir);
-    const ids = providers.filter((p) => (p.kind ?? 'image') !== 'video').map((p) => p.id);
+    const ids = providers.filter((p) => (p.kind ?? 'image') !== 'video').map((p) => displayModel(p.id));
     return { code: 0, stdout: ids.join('\n') + '\n', stderr: '' };
   }
 
@@ -49,8 +49,11 @@ export async function main(argv, { providersDir = DEFAULT_PROVIDERS_DIR } = {}) 
   if (!sizeMatch) return { code: 1, stdout: '', stderr: `error: invalid --size "${values.size}" (expected WxH, e.g. 512x512)\n` };
   const width = Number(sizeMatch[1]);
   const height = Number(sizeMatch[2]);
+  if (width <= 0 || height <= 0) return { code: 1, stdout: '', stderr: `error: invalid --size "${values.size}" (expected WxH, e.g. 512x512)\n` };
 
   try {
+    // `mime` is intentionally unused: output format comes from the --out
+    // file extension via sharp, not from the provider's response mime type.
     const { buffer, ms, cost } = await generateImage({ model: resolveModel(values.model), prompt, providersDir });
     await resizeToExact(buffer, width, height, values.out);
     const json = JSON.stringify({ path: values.out, model: values.model, size: values.size, ms, cost });

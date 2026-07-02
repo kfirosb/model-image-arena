@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { loadProviders } from './registry.js';
+import { displayModel } from './modelAliases.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PROVIDERS_DIR = join(__dirname, '..', 'providers');
@@ -31,15 +32,15 @@ export async function generateImage({ model, prompt, providersDir = DEFAULT_PROV
   const providers = await loadProviders(providersDir);
   const provider = providers.find((p) => p.id === model);
   if (!provider) {
-    const ids = providers.filter((p) => (p.kind ?? 'image') !== 'video').map((p) => p.id);
-    throw new Error(`Unknown model "${model}". Available: ${ids.join(', ')}`);
+    const ids = providers.filter((p) => (p.kind ?? 'image') !== 'video').map((p) => displayModel(p.id));
+    throw new Error(`Unknown model "${displayModel(model)}". Available: ${ids.join(', ')}`);
   }
   if ((provider.kind ?? 'image') === 'video') {
-    throw new Error(`"${model}" is a video model; genimage is image-only`);
+    throw new Error(`"${displayModel(model)}" is a video model; genimage is image-only`);
   }
   if (!provider.hasKey()) {
     const env = envForModel(model);
-    throw new Error(`No API key for "${model}". Set ${env || 'its API key'} in .env`);
+    throw new Error(`No API key for "${displayModel(model)}". Set ${env || 'its API key'} in .env`);
   }
   const result = await provider.generate(prompt);
   const { buffer, mime } = await toBuffer(result.image);

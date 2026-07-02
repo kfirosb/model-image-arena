@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
+import { realpathSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { generateImage } from '../src/generateImage.js';
 import { resizeToExact } from '../src/resizeImage.js';
@@ -64,7 +65,20 @@ export async function main(argv, { providersDir = DEFAULT_PROVIDERS_DIR } = {}) 
 }
 
 // Run when invoked directly (not when imported by tests).
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+// True when run as the CLI (directly or via an npm-link symlink), false when
+// imported by tests. realpath resolves a symlinked `genimage` back to this file.
+function invokedAsCli() {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
+}
+
+if (invokedAsCli()) {
+  // Load the repo's .env so the CLI works from any folder without --env-file.
+  try { process.loadEnvFile(join(__dirname, '..', '.env')); } catch { /* no .env; rely on real env vars */ }
   const res = await main(process.argv.slice(2));
   if (res.stdout) process.stdout.write(res.stdout);
   if (res.stderr) process.stderr.write(res.stderr);

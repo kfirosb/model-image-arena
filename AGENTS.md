@@ -6,19 +6,29 @@ illustration) for a project.
 
 ## Command
 
+If it was installed globally (`npm link` in this repo, one time), run it from
+**any folder**:
+
 ```bash
-node bin/genimage.mjs "<prompt>" --out <path> [--model <id>] [--size <WxH>]
+genimage "<prompt>" --out <path> [--model <id>] [--size <WxH>]
+```
+
+Otherwise call the script directly (works from any folder too):
+
+```bash
+node /ABSOLUTE/PATH/TO/model-image-test/bin/genimage.mjs "<prompt>" --out <path> [--model <id>] [--size <WxH>]
 ```
 
 - `"<prompt>"` — required. What to draw. Be specific (style, subject, background).
-- `--out <path>` — required. Where to save. Format is taken from the extension
-  (`.png`, `.jpg`, `.webp`).
+- `--out <path>` — required. Where to save; **relative to your current folder**,
+  so the file lands in your project. Format is taken from the extension
+  (`.png`, `.jpg`, `.webp`). Missing parent folders are created automatically.
 - `--model <id>` — optional, default `gpt-image-1`.
 - `--size <WxH>` — optional, default `1024x1024`. The image is generated then
   cropped/resized to EXACTLY these pixels.
 
-Run from the repo root. Requires API keys in `.env` (`OPENAI_API_KEY` and/or
-`REPLICATE_API_TOKEN`).
+API keys are loaded automatically from the repo's `.env` (`OPENAI_API_KEY` and/or
+`REPLICATE_API_TOKEN`) — you don't pass them. Do not read or print the keys.
 
 ## Output (how to read the result)
 

@@ -64,6 +64,29 @@ and expensive (dollars per clip), every video model is **opt-in**:
 > Costs shown in the UI are rough estimates for budgeting — a single Sora or Veo
 > clip can cost a few dollars. Verify against current provider pricing.
 
+## 🤖 Generate images from the CLI (for agents)
+
+Agents (Claude Code and others) can generate a single image at an exact size and
+save it to a path — reusing the same models as the arena:
+
+```bash
+node bin/genimage.mjs "logo of a cat, flat vector" \
+  --model gpt-image-1 \
+  --size 512x512 \
+  --out ./assets/cat-logo.png
+```
+
+Prints one JSON line on success so a calling agent can parse the result:
+
+```json
+{"path":"./assets/cat-logo.png","model":"gpt-image-1","size":"512x512","ms":4200,"cost":0.04}
+```
+
+- `--model` — default `gpt-image-1`. Run `node bin/genimage.mjs --list-models` to see all image models.
+- `--size WxH` — default `1024x1024`. The image is generated then resized/cover-cropped to these **exact** pixels.
+- `--out <path>` — required. Output format is taken from the extension (`.png` / `.jpg` / `.webp`).
+- Errors print to stderr with a non-zero exit code. Each call spends real API money (see `cost` in the output).
+
 ## 🚀 Quick start
 
 Requires **Node.js 20.6+**.

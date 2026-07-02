@@ -5,6 +5,9 @@
   "type": "module",
   "license": "MIT",
   "author": "kfir bekhavod",
+  "bin": {
+    "genimage": "bin/genimage.mjs"
+  },
   "keywords": [
     "ai",
     "image-generation",
@@ -23,7 +26,8 @@
   "scripts": {
     "start": "node --env-file=.env server.js",
     "dev": "node --env-file=.env --watch server.js",
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "genimage": "node bin/genimage.mjs"
   },
   "dependencies": {
     "express": "^4.19.2",

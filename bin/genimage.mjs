@@ -14,6 +14,36 @@ const DEFAULT_PROVIDERS_DIR = join(__dirname, '..', 'providers');
 const USAGE = `Usage: genimage "<prompt>" --out <path> [--model <id>] [--size <WxH>]
        genimage --list-models`;
 
+const HELP = `genimage — generate one image at an exact size and save it.
+
+${USAGE}
+       genimage --help
+
+Arguments:
+  <prompt>          What to draw (be specific about style, subject, background).
+
+Options:
+  --out <path>      Required. Where to save; relative to your current folder.
+                    Format from the extension (.png, .jpg, .webp). Missing
+                    parent folders are created automatically.
+  --model <id>      Model to use (default: gpt-image-1). --list-models to see all.
+  --size <WxH>      Exact output pixels (default: 1024x1024), e.g. 512x512.
+  --list-models     Print the available image model ids and exit.
+  -h, --help        Show this help and exit.
+
+Output:
+  On success prints one JSON line to stdout, e.g.
+    {"path":"./cat.png","model":"gpt-image-1","size":"512x512","ms":4200,"cost":0.04}
+  On error prints a message to stderr and exits non-zero.
+
+Examples:
+  genimage "flat vector logo of a fox" --size 512x512 --out ./logo.png
+  genimage "abstract blue gradient" --size 1920x1080 --out ./bg.jpg
+  genimage "poster: SALE 50% OFF" --model replicate-ideogram --out ./sale.png
+
+API keys load automatically from the repo's .env (OPENAI_API_KEY / REPLICATE_API_TOKEN).
+Each call spends real API money (see "cost" in the output).`;
+
 // Re-exported so existing callers/tests importing resolveModel from this
 // file keep working; the real definition lives in src/modelAliases.js.
 export { resolveModel } from '../src/modelAliases.js';
@@ -30,10 +60,15 @@ export async function main(argv, { providersDir = DEFAULT_PROVIDERS_DIR } = {}) 
         model: { type: 'string', default: 'gpt-image-1' },
         size: { type: 'string', default: '1024x1024' },
         'list-models': { type: 'boolean', default: false },
+        help: { type: 'boolean', short: 'h', default: false },
       },
     }));
   } catch (err) {
     return { code: 1, stdout: '', stderr: `error: ${err.message}\n${USAGE}\n` };
+  }
+
+  if (values.help) {
+    return { code: 0, stdout: `${HELP}\n`, stderr: '' };
   }
 
   if (values['list-models']) {

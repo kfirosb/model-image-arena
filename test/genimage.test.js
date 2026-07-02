@@ -72,3 +72,17 @@ test('resolveModel aliases friendly names to real provider ids', () => {
   assert.equal(resolveModel('gpt-image-2'), 'openai-gpt-image-2');
   assert.equal(resolveModel('replicate-flux'), 'replicate-flux');
 });
+
+test('--help prints usage to stdout and exits 0', async () => {
+  const res = await main(['--help'], { providersDir: dir });
+  assert.equal(res.code, 0);
+  assert.equal(res.stderr, '');
+  assert.match(res.stdout, /Usage: genimage/);
+  assert.match(res.stdout, /--size <WxH>/);
+});
+
+test('-h is an alias for --help', async () => {
+  const res = await main(['-h'], { providersDir: dir });
+  assert.equal(res.code, 0);
+  assert.match(res.stdout, /Options:/);
+});

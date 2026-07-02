@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
-import { readFile, unlink } from 'node:fs/promises';
+import { readFile, unlink, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { resizeToExact } from '../src/resizeImage.js';
@@ -37,4 +37,17 @@ test('resizeToExact infers the encoder from the extension (webp)', async () => {
 
 test('resizeToExact rejects invalid dimensions', async () => {
   await assert.rejects(() => resizeToExact(Buffer.from('x'), 0, 100, join(tmpdir(), 'nope.png')), /invalid size/);
+});
+
+test('resizeToExact creates missing parent directories', async () => {
+  const baseDir = join(tmpdir(), `genimage-resize-dir-${process.pid}`);
+  const out = join(baseDir, 'nested', 'deep', 'img.png');
+  try {
+    await resizeToExact(await solid(20, 20), 32, 32, out);
+    const meta = await sharp(await readFile(out)).metadata();
+    assert.equal(meta.width, 32);
+    assert.equal(meta.height, 32);
+  } finally {
+    await rm(baseDir, { recursive: true, force: true }).catch(() => {});
+  }
 });

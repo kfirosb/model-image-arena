@@ -8,3 +8,6 @@ runs/
 # OS / editor cruft
 .DS_Store
 *.log
+
+# generated image assets from the genimage CLI
+/assets/

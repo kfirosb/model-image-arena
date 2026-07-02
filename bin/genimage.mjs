@@ -12,6 +12,11 @@ const DEFAULT_PROVIDERS_DIR = join(__dirname, '..', 'providers');
 const USAGE = `Usage: genimage "<prompt>" --out <path> [--model <id>] [--size <WxH>]
        genimage --list-models`;
 
+// Friendly aliases → real provider ids. The arena's OpenAI providers use ids
+// `openai` / `openai-gpt-image-2`, but agents naturally say gpt-image-1/2.
+const MODEL_ALIASES = { 'gpt-image-1': 'openai', 'gpt-image-2': 'openai-gpt-image-2' };
+export function resolveModel(name) { return MODEL_ALIASES[name] ?? name; }
+
 // Returns { code, stdout, stderr } — no process.exit, so it's testable.
 export async function main(argv, { providersDir = DEFAULT_PROVIDERS_DIR } = {}) {
   let values, positionals;
@@ -46,7 +51,7 @@ export async function main(argv, { providersDir = DEFAULT_PROVIDERS_DIR } = {}) 
   const height = Number(sizeMatch[2]);
 
   try {
-    const { buffer, ms, cost } = await generateImage({ model: values.model, prompt, providersDir });
+    const { buffer, ms, cost } = await generateImage({ model: resolveModel(values.model), prompt, providersDir });
     await resizeToExact(buffer, width, height, values.out);
     const json = JSON.stringify({ path: values.out, model: values.model, size: values.size, ms, cost });
     return { code: 0, stdout: json + '\n', stderr: '' };

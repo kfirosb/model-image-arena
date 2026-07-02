@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { readFile, unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import sharp from 'sharp';
-import { main } from '../bin/genimage.mjs';
+import { main, resolveModel } from '../bin/genimage.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const dir = join(__dirname, 'fixtures', 'genimage');
@@ -51,4 +51,10 @@ test('requires a prompt', async () => {
   const res = await main(['--model', 'fake-image', '--out', join(tmpdir(), 'x.png')], { providersDir: dir });
   assert.equal(res.code, 1);
   assert.match(res.stderr, /prompt is required/);
+});
+
+test('resolveModel aliases friendly names to real provider ids', () => {
+  assert.equal(resolveModel('gpt-image-1'), 'openai');
+  assert.equal(resolveModel('gpt-image-2'), 'openai-gpt-image-2');
+  assert.equal(resolveModel('replicate-flux'), 'replicate-flux');
 });

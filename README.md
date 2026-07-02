@@ -83,6 +83,7 @@ Prints one JSON line on success so a calling agent can parse the result:
 ```
 
 - `--model` — default `gpt-image-1`. Run `node bin/genimage.mjs --list-models` to see all image models.
+- `gpt-image-1` and `gpt-image-2` are friendly aliases for the `openai` and `openai-gpt-image-2` providers. Run `node bin/genimage.mjs --list-models` to see every model id.
 - `--size WxH` — default `1024x1024`. The image is generated then resized/cover-cropped to these **exact** pixels.
 - `--out <path>` — required. Output format is taken from the extension (`.png` / `.jpg` / `.webp`).
 - Errors print to stderr with a non-zero exit code. Each call spends real API money (see `cost` in the output).
